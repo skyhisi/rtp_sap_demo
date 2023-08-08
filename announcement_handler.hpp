@@ -22,6 +22,9 @@
 #ifndef ANNOUNCEMENT_HANDLER_HPP
 #define ANNOUNCEMENT_HANDLER_HPP
 
+#include <array>
+#include <span>
+
 #include <boost/asio.hpp>
 
 namespace asio = boost::asio;

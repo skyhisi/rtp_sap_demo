@@ -21,6 +21,8 @@
 
 #include "session_manager.hpp"
 
+#include <charconv>
+
 session_manager::session_manager(asio::io_context& context):
     m_context(context),
     m_session_map()

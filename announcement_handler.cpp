@@ -87,7 +87,7 @@ void announcement_handler::handle(const boost::system::error_code& error, std::s
 {
     if (error)
     {
-        BOOST_LOG_TRIVIAL(error) << "Failed to receive packet: " << error.what();
+        BOOST_LOG_TRIVIAL(error) << "Failed to receive packet: " << error;
     }
     else
     {

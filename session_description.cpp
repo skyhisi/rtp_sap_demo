@@ -21,6 +21,7 @@
 
 #include "session_description.hpp"
 
+#include <charconv>
 #include <regex>
 
 #include <boost/log/trivial.hpp>

@@ -22,6 +22,7 @@
 #ifndef SESSION_MANAGER_HPP
 #define SESSION_MANAGER_HPP
 
+#include <functional>
 #include <unordered_map>
 
 #include <boost/container_hash/hash.hpp>
@@ -51,7 +52,11 @@ struct std::hash<session_key>
     std::size_t operator()(const session_key& value) const noexcept
     {
         std::size_t hash = 0;
+#if BOOST_VERSION >= 107600
         boost::hash_combine(hash, std::hash<boost::asio::ip::address>{}(value.source_ip));
+#else
+        boost::hash_combine(hash, std::hash<std::string>{}(value.source_ip.to_string()));
+#endif
         boost::hash_combine(hash, std::hash<uint16_t>{}(value.session_hash));
         return hash;
     }
