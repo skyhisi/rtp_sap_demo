@@ -74,7 +74,7 @@ int main(int argc, char** argv)
     asio::ip::address announce_addr = asio::ip::make_address(po_vars["announce_addr"].as<std::string>());
     if (!announce_addr.is_multicast())
     {
-        BOOST_LOG_TRIVIAL(error) << "SAP announcment address must be multicast (got: " << announce_addr << ")";
+        BOOST_LOG_TRIVIAL(error) << "SAP announcement address must be multicast (got: " << announce_addr << ")";
         return 1;
     }
 

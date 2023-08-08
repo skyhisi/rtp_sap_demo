@@ -138,14 +138,18 @@ struct save_stream::save_stream_data
             stream_addr = boost::asio::ip::address::from_string(media_desc.connection_fields[0].addr);
         }
 
-        endpoint = asio::ip::udp::endpoint(stream_addr, media_desc.header.port);
+        endpoint = asio::ip::udp::endpoint(stream_addr, (asio::ip::port_type)media_desc.header.port);
     }
 
     void init_socket()
     {
+        asio::ip::udp::endpoint any_endpoint(
+            (endpoint.address().is_v6() ? asio::ip::address(asio::ip::address_v6::any()) : asio::ip::address(asio::ip::address_v4::any())),
+            endpoint.port());
+
         socket.open(endpoint.protocol());
         socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
-        socket.bind(endpoint);
+        socket.bind(any_endpoint);
         socket.set_option(asio::ip::multicast::join_group(endpoint.address()));
     }
 

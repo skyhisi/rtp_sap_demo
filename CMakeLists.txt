@@ -5,13 +5,20 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 if (MSVC)
     add_compile_options(/W4)  # /WX
+    add_compile_definitions(_WIN32_WINNT=0x0601)
 else()
     add_compile_options(-Wall -Wextra -pedantic -Werror)
 endif()
 
-find_package(Boost REQUIRED COMPONENTS system program_options log log_setup)
+find_package(
+    Boost REQUIRED
+    COMPONENTS system program_options log log_setup
+    HINTS "C:/Boost"
+)
 
-find_library(LIBURING uring REQUIRED)
+if (NOT MSVC)
+    find_library(LIBURING uring REQUIRED)
+endif()
 
 add_executable(
     rtp_sap_demo
@@ -31,10 +38,15 @@ target_link_libraries(
     Boost::log_setup
     Boost::program_options
     Boost::system
-    ${LIBURING}
 )
-target_compile_definitions(
-    rtp_sap_demo
-    PRIVATE
-    BOOST_ASIO_HAS_IO_URING
-)
+if (LIBURING)
+    target_link_libraries(
+        rtp_sap_demo
+        ${LIBURING}
+    )
+    target_compile_definitions(
+        rtp_sap_demo
+        PRIVATE
+        BOOST_ASIO_HAS_IO_URING
+    )
+endif()

@@ -48,10 +48,13 @@ announcement_handler::announcement_handler(
     m_recv_buffer()
 {
     asio::ip::udp::endpoint announce_endpoint(announce_addr, announce_port);
+    asio::ip::udp::endpoint any_endpoint(
+        (announce_addr.is_v6() ? asio::ip::address(asio::ip::address_v6::any()) : asio::ip::address(asio::ip::address_v4::any())),
+        announce_port);
 
     m_socket.open(announce_endpoint.protocol());
     m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
-    m_socket.bind(announce_endpoint);
+    m_socket.bind(any_endpoint);
     m_socket.set_option(asio::ip::multicast::join_group(announce_addr));
 
     start_receive();

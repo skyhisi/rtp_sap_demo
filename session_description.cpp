@@ -129,7 +129,7 @@ void session_description::parse(const std::string& payload)
 
 void session_description::parse_proto_version(const std::string_view& value)
 {
-    std::from_chars(value.begin(), value.end(), m_protocol_version);
+    std::from_chars(value.data(), value.data() + value.size(), m_protocol_version);
     if (m_protocol_version != 0)
     {
         BOOST_LOG_TRIVIAL(error) << "Warning: Expected protocol version 0, found: " << m_protocol_version;
@@ -188,7 +188,7 @@ void session_description::parse_bandwidth_field(
 {
     std::regex bw_regex("([[:alnum:]]+):([[:digit:]]+)", std::regex::extended);
     std::cmatch results;
-    if (std::regex_match(value.begin(), value.end(), results, bw_regex))
+    if (std::regex_match(value.data(), value.data() + value.size(), results, bw_regex))
     {
         bandwidth_field_t field;
         field.bw_type = results[1].str();
