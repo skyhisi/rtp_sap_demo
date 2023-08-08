@@ -22,20 +22,20 @@ jobs:
     - name: Install Dependencies
       run: >
         sudo apt-get install -y
-          libboost-dev
-          libboost-system-dev
-          libboost-program-options-dev
-          libboost-log-dev
-          libasio-dev
-          liburing-dev
+        libboost-dev
+        libboost-system-dev
+        libboost-program-options-dev
+        libboost-log-dev
+        libasio-dev
+        liburing-dev
 
     - name: Configure CMake
       run: >
         cmake
-          -B ${{github.workspace}}/build
-          -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-          -DCMAKE_C_COMPILER=${{env.C_COMPILER}}
-          -DCMAKE_CXX_COMPILER=${{env.CXX_COMPILER}}
+        -B ${{github.workspace}}/build
+        -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        -DCMAKE_C_COMPILER=${{env.C_COMPILER}}
+        -DCMAKE_CXX_COMPILER=${{env.CXX_COMPILER}}
 
     - name: Build
       # Build your program with the given configuration
