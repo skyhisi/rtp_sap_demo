@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Output files
+*.wav
+
+# Build directory
+build
