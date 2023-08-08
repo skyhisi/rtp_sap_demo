@@ -9,8 +9,8 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
-  C_COMPILER: gcc-12
-  CXX_COMPILER: g++-12
+  BOOST_SOURCE_URL: https://boostorg.jfrog.io/artifactory/main/release/1.82.0/source/boost_1_82_0.tar.bz2
+  BOOST_SOURCE_NAME: boost_1_82_0
 
 jobs:
   build:
@@ -20,25 +20,63 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install Dependencies
-      run: >
-        sudo apt-get install -y
-        libboost-dev
-        libboost-system-dev
-        libboost-program-options-dev
-        libboost-log-dev
-        libasio-dev
-        liburing-dev
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y liburing-dev cmake
+
+    - name: Cache Boost Download
+      id: cache-boost-download
+      uses: actions/cache@v3
+      with:
+        path: ${{env.BOOST_SOURCE_NAME}}.tar.bz2
+        key: boost-download
+
+    - name: Download Boost
+      if: steps.cache-boost-download.outputs.cache-hit != 'true'
+      run: wget "${{env.BOOST_SOURCE_URL}}"
+
+    - name: Cache Boost Build
+      id: cache-boost-build
+      uses: actions/cache@v3
+      with:
+        path: ${{env.BOOST_SOURCE_NAME}}
+        key: build-boost
+
+    - name: Build Boost
+      if: steps.cache-boost-build.outputs.cache-hit != 'true'
+      run: |
+        tar -xf ${{env.BOOST_SOURCE_NAME}}.tar.bz2
+        cd ${{env.BOOST_SOURCE_NAME}}
+        ./bootstrap.sh
+        sudo ./b2 \
+          --without-graph \
+          --without-graph_parallel \
+          --without-mpi \
+          --without-python \
+          --without-wave \
+          variant=release link=shared threading=multi \
+          install
+
+    - name: Re-install Boost
+      if: steps.cache-boost-build.outputs.cache-hit == 'true'
+      run: |
+        cd ${{env.BOOST_SOURCE_NAME}}
+        sudo ./b2 \
+          --without-graph \
+          --without-graph_parallel \
+          --without-mpi \
+          --without-python \
+          --without-wave \
+          variant=release link=shared threading=multi \
+          install
 
     - name: Configure CMake
       run: >
         cmake
         -B ${{github.workspace}}/build
         -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-        -DCMAKE_C_COMPILER=${{env.C_COMPILER}}
-        -DCMAKE_CXX_COMPILER=${{env.CXX_COMPILER}}
 
     - name: Build
-      # Build your program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     # - name: Test
